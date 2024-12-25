@@ -1,8 +1,11 @@
 package br.com.api.device.application.rest.v1.device;
 
-import br.com.api.device.application.common.*;
+import br.com.api.device.application.common.ApiResponse;
+import br.com.api.device.application.common.ApiResponseMessage;
+import br.com.api.device.application.common.MessageService;
+import br.com.api.device.application.common.MessageType;
 import br.com.api.device.domain.dto.DeviceDTO;
-import br.com.api.device.domain.port.usecase.DeviceService;
+import br.com.api.device.domain.services.DeviceApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,7 @@ import java.util.List;
 @Tag(name = "Device Management", description = "Operations for managing devices")
 public class DeviceController {
 
-    private final DeviceService service;
+    private final DeviceApplicationService deviceApplicationService;
     private final MessageService messageService;
 
     @Operation(
@@ -25,9 +28,8 @@ public class DeviceController {
             description = "Create a new device with the provided information"
     )
     @PostMapping
-    public ResponseEntity<ApiResponse<DeviceDTO>> addDevice(
-            @RequestBody DeviceDTO dto) {
-        DeviceDTO addedDevice = service.addDevice(dto);
+    public ResponseEntity<ApiResponse<DeviceDTO>> addDevice(@RequestBody DeviceDTO deviceDTO) {
+        DeviceDTO addedDevice = deviceApplicationService.addDevice(deviceDTO);
         ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_ADDED_SUCCESS);
         return ResponseEntity.ok(ApiResponse.of(addedDevice, message));
     }
@@ -37,16 +39,10 @@ public class DeviceController {
             description = "Retrieve a device by its unique identifier"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<DeviceDTO>> getDeviceById(
-            @PathVariable Long id) {
-        try {
-            DeviceDTO deviceDTO = service.getDeviceById(id);
-            ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_ADDED_SUCCESS);
-            return ResponseEntity.ok(ApiResponse.of(deviceDTO, message));
-        } catch (IllegalArgumentException e) {
-            ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_NOT_FOUND, id);
-            return ResponseEntity.badRequest().body(ApiResponse.of(null, message));
-        }
+    public ResponseEntity<ApiResponse<DeviceDTO>> getDeviceById(@PathVariable Long id) {
+        DeviceDTO deviceDTO = deviceApplicationService.getDeviceById(id);
+        ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_ADDED_SUCCESS);
+        return ResponseEntity.ok(ApiResponse.of(deviceDTO, message));
     }
 
     @Operation(
@@ -57,11 +53,9 @@ public class DeviceController {
     public ResponseEntity<ApiResponse<List<DeviceDTO>>> listAllDevices(
             @RequestParam int offset,
             @RequestParam int limit) {
-        List<DeviceDTO> devices = service.listAllDevices(offset, limit);
-        long count = service.countAllDevices();
-        ApiResponsePageable pageable = new ApiResponsePageable(offset, limit, count);
+        List<DeviceDTO> devices = deviceApplicationService.listAllDevices(offset, limit);
         ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_ADDED_SUCCESS);
-        return ResponseEntity.ok(ApiResponse.ofPaged(devices, message, pageable));
+        return ResponseEntity.ok(ApiResponse.of(devices, message));
     }
 
     @Operation(
@@ -69,17 +63,10 @@ public class DeviceController {
             description = "Update an existing device's information"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<DeviceDTO>> updateDevice(
-            @PathVariable Long id,
-            @RequestBody DeviceDTO dto) {
-        try {
-            DeviceDTO updatedDevice = service.updateDevice(id, dto);
-            ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_UPDATED_SUCCESS);
-            return ResponseEntity.ok(ApiResponse.of(updatedDevice, message));
-        } catch (IllegalArgumentException e) {
-            ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_NOT_FOUND, id);
-            return ResponseEntity.badRequest().body(ApiResponse.of(null, message));
-        }
+    public ResponseEntity<ApiResponse<DeviceDTO>> updateDevice(@PathVariable Long id, @RequestBody DeviceDTO dto) {
+        DeviceDTO updatedDevice = deviceApplicationService.updateDevice(id, dto);
+        ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_UPDATED_SUCCESS);
+        return ResponseEntity.ok(ApiResponse.of(updatedDevice, message));
     }
 
     @Operation(
@@ -87,16 +74,10 @@ public class DeviceController {
             description = "Remove a device from the system by its ID"
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteDevice(
-            @PathVariable Long id) {
-        try {
-            service.deleteDevice(id);
-            ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_DELETED_SUCCESS);
-            return ResponseEntity.ok(ApiResponse.of(null, message));
-        } catch (IllegalArgumentException e) {
-            ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_NOT_FOUND, id);
-            return ResponseEntity.badRequest().body(ApiResponse.of(null, message));
-        }
+    public ResponseEntity<ApiResponse<Void>> deleteDevice(@PathVariable Long id) {
+        deviceApplicationService.deleteDevice(id);
+        ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_DELETED_SUCCESS);
+        return ResponseEntity.ok(ApiResponse.of(null, message));
     }
 
     @Operation(
@@ -104,9 +85,8 @@ public class DeviceController {
             description = "Search and list devices by their brand"
     )
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<DeviceDTO>>> searchByBrand(
-            @RequestParam String brand) {
-        List<DeviceDTO> devices = service.searchByBrand(brand);
+    public ResponseEntity<ApiResponse<List<DeviceDTO>>> searchByBrand(@RequestParam String brand) {
+        List<DeviceDTO> devices = deviceApplicationService.searchByBrand(brand);
         ApiResponseMessage message = messageService.getMessage(MessageType.DEVICE_ADDED_SUCCESS);
         return ResponseEntity.ok(ApiResponse.of(devices, message));
     }
