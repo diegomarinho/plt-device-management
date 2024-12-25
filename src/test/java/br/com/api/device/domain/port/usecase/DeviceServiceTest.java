@@ -4,7 +4,6 @@ import br.com.api.device.application.common.MessageService;
 import br.com.api.device.application.common.MessageType;
 import br.com.api.device.domain.dto.DeviceDTO;
 import br.com.api.device.domain.entity.Device;
-import br.com.api.device.domain.usecase.DeviceService;
 import br.com.api.device.infrastructure.repository.DeviceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

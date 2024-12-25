@@ -1,4 +1,4 @@
-package br.com.api.device.domain.usecase;
+package br.com.api.device.domain.port.usecase;
 
 import br.com.api.device.application.common.MessageService;
 import br.com.api.device.application.common.MessageType;

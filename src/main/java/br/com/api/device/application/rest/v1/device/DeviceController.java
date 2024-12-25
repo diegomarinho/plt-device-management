@@ -2,7 +2,7 @@ package br.com.api.device.application.rest.v1.device;
 
 import br.com.api.device.application.common.*;
 import br.com.api.device.domain.dto.DeviceDTO;
-import br.com.api.device.domain.usecase.DeviceService;
+import br.com.api.device.domain.port.usecase.DeviceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
